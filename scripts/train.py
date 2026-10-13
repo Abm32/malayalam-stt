@@ -22,8 +22,9 @@ class Collator:
         inp = self.proc.feature_extractor.pad([{"input_features": f["input_features"]} for f in feats], return_tensors="pt")
         lab = self.proc.tokenizer.pad([{"input_ids": f["labels"]} for f in feats], return_tensors="pt")
         labels = lab["input_ids"].masked_fill(lab.attention_mask.ne(1), -100)
-        if (labels[:, 0] == self.proc.tokenizer.bos_token_id).all():
-            labels = labels[:, 1:]
+        sot = self.proc.tokenizer.convert_tokens_to_ids("<|startoftranscript|>")
+        if (labels[:, 0] == sot).all():
+            labels = labels[:, 1:]  # shift_tokens_right re-adds decoder_start_token
         inp["labels"] = labels
         return inp
 
@@ -75,7 +76,7 @@ def main():
         output_dir=str(out), per_device_train_batch_size=a.bs, per_device_eval_batch_size=8,
         gradient_accumulation_steps=2, learning_rate=a.lr, warmup_steps=50, num_train_epochs=a.epochs,
         fp16=True, gradient_checkpointing=True, eval_strategy="steps", eval_steps=a.eval_steps, save_steps=a.eval_steps,
-        logging_steps=25, predict_with_generate=True, generation_max_length=225,
+        logging_steps=25, predict_with_generate=True, generation_max_length=448,
         load_best_model_at_end=True, metric_for_best_model="cer", greater_is_better=False,
         save_total_limit=2, report_to="none", remove_unused_columns=False, label_names=["labels"],
         dataloader_num_workers=4,

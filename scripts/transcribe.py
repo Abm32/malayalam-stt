@@ -16,7 +16,7 @@ def load(base, adapter, device):
         model = PeftModel.from_pretrained(model, adapter).merge_and_unload()
     return pipeline("automatic-speech-recognition", model=model, tokenizer=proc.tokenizer,
                     feature_extractor=proc.feature_extractor, device=0 if device == "cuda" else -1,
-                    chunk_length_s=30, stride_length_s=5)
+                    chunk_length_s=15, stride_length_s=3)
 
 
 def main():

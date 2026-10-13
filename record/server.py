@@ -87,6 +87,9 @@ async def upload(id: int = Form(...), audio: UploadFile = None):
         raise HTTPException(400, "recording under 0.5s")
     row = {"id": id, "path": str(out.relative_to(ROOT)), "text": prompts[id - 1],
            "duration_s": round(info.duration, 3)}
-    with MANIFEST.open("a", encoding="utf-8") as f:
-        f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    with MANIFEST.open("a+b") as f:
+        f.seek(0, 2)
+        if f.tell() and (f.seek(-1, 2), f.read(1))[1] != b"\n":
+            f.write(b"\n")  # previous write was cut mid-line; do not merge into it
+        f.write((json.dumps(row, ensure_ascii=False) + "\n").encode("utf-8"))
     return JSONResponse(row)

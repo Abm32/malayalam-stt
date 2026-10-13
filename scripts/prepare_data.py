@@ -14,14 +14,12 @@ SR = 16000
 
 
 def split_ids(ids, seed=42):
-    ids = sorted(ids)
-    rng = random.Random(seed)
-    rng.shuffle(ids)
-    n = len(ids)
-    n_dev = n_test = max(1, n // 10)
-    return {"test": sorted(ids[:n_test]),
-            "dev": sorted(ids[n_test:n_test + n_dev]),
-            "train": sorted(ids[n_test + n_dev:])}
+    """Per-id hash bucket (~10% test, ~10% dev): an id's split never changes when more ids are recorded."""
+    out = {"test": [], "dev": [], "train": []}
+    for i in sorted(ids):
+        u = random.Random(f"{seed}:{i}").random()
+        out["test" if u < 0.1 else "dev" if u < 0.2 else "train"].append(i)
+    return out
 
 
 def augment(y, rng):

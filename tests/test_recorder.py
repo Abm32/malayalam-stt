@@ -53,3 +53,12 @@ def test_upload_rejects_empty_blob_without_manifest_line(tmp_path, monkeypatch):
     r = c.post("/upload", data={"id": 1}, files={"audio": ("a.webm", b"\x1a\x45", "audio/webm")})
     assert r.status_code == 400
     assert not (tmp_path / "own" / "manifest.jsonl").exists()
+
+
+def test_upload_after_truncated_manifest_line_starts_a_fresh_line(tmp_path, monkeypatch):
+    c = _client(tmp_path, monkeypatch)
+    (tmp_path / "own").mkdir()
+    (tmp_path / "own" / "manifest.jsonl").write_text('{"id": 1, "pa')  # crashed mid-write, no newline
+    r = c.post("/upload", data={"id": 1}, files={"audio": ("a.webm", _webm(tmp_path, 2), "audio/webm")})
+    assert r.status_code == 200, r.text
+    assert [row["id"] for row in read_manifest(tmp_path / "own" / "manifest.jsonl")] == [1]

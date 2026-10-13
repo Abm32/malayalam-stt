@@ -16,3 +16,9 @@ def test_filter_keeps_only_malayalam_5_to_20_words_deduped():
 def test_filter_drops_sentences_cut_at_an_initial():
     # splitter broke "... ബി. ഉണ്ണികൃഷ്ണൻ" at the initial; last word is a 1-letter abbreviation
     assert filter_sentences(["ലാൽ ജോസ്, ഷാജി കൈലാസ്, അൻവർ റഷീദ്, ശ്യാമപ്രസാദ്, ബി."]) == []
+
+
+def test_filter_by_tokens_drops_long_sentences():
+    from scripts.prepare_prompts import filter_by_tokens
+    count = lambda s: len(s)  # stand-in tokenizer: 1 token per char
+    assert filter_by_tokens(["abc", "abcdef"], count, max_tokens=4) == ["abc"]

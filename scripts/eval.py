@@ -32,7 +32,7 @@ def transcribe_all(model_id, ds, adapter=None, batch_size=8, device="cuda"):
         feats = proc.feature_extractor([x["array"] for x in batch["audio"]], sampling_rate=16000,
                                        return_tensors="pt").input_features.to(device, torch.float16)
         with torch.no_grad():
-            ids = model.generate(feats, language="ml", task="transcribe", num_beams=1, max_new_tokens=225)
+            ids = model.generate(feats, language="ml", task="transcribe", num_beams=1, max_new_tokens=440)
         hyps += proc.batch_decode(ids, skip_special_tokens=True)
     return hyps
 

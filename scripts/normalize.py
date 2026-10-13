@@ -18,8 +18,10 @@ _WS = re.compile(r"\s+")
 
 def normalize(text: str) -> str:
     text = unicodedata.normalize("NFC", text)
+    text = text.replace("\u0d28\u0d4d\u200d\u0d31", "\u0d28\u0d4d\u0d31")  # ന്‍റ (old ZWJ nta) -> ന്റ
     for old, new in _CHILLU.items():
         text = text.replace(old, new)
+    text = text.replace("\u0d7b\u0d4d\u0d31", "\u0d28\u0d4d\u0d31")  # ൻ്റ (chillu nta) -> ന്റ
     text = _ZW.sub("", text)
     text = _PUNCT.sub(" ", text)
     text = text.replace("_", " ")

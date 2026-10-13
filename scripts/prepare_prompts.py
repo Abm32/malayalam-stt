@@ -22,6 +22,18 @@ def filter_sentences(lines):
     return out
 
 
+def filter_by_tokens(sents, count_tokens, max_tokens):
+    return [s for s in sents if count_tokens(s) <= max_tokens]
+
+
+def whisper_token_counter():
+    """Whisper label length after normalize(); Malayalam runs ~1.5-2 tokens per character."""
+    from transformers import WhisperTokenizer
+    from scripts.normalize import normalize
+    tok = WhisperTokenizer.from_pretrained("openai/whisper-small", language="malayalam", task="transcribe")
+    return lambda s: len(tok(normalize(s)).input_ids)
+
+
 def load_sources(hf_token=None):
     """Malayalam Wikipedia sentences (wikimedia/wikipedia 20231101.ml, text column only).
     Deliberately NOT IMaSC/Common Voice: public Malayalam ASR models train on those sentences,
@@ -42,8 +54,9 @@ def main():
     ap.add_argument("--n", type=int, default=1000)
     ap.add_argument("--out", default="data/prompts.txt")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--max_tokens", type=int, default=400, help="Whisper hard cap is 448 label tokens")
     a = ap.parse_args()
-    sents = filter_sentences(load_sources())
+    sents = filter_by_tokens(filter_sentences(load_sources()), whisper_token_counter(), a.max_tokens)
     random.Random(a.seed).shuffle(sents)
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text("\n".join(sents[: a.n]) + "\n", encoding="utf-8")
