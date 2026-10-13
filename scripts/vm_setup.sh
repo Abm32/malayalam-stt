@@ -7,7 +7,7 @@ sudo apt-get install -y -q ffmpeg libsndfile1 >/dev/null
 python3 -m venv ~/voice-venv
 ~/voice-venv/bin/pip install -q --upgrade pip
 ~/voice-venv/bin/pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cu121
-~/voice-venv/bin/pip install -q "transformers>=4.44" "peft>=0.12" "datasets>=2.19,<4" accelerate evaluate jiwer librosa soundfile huggingface_hub pytest fastapi httpx python-multipart
+~/voice-venv/bin/pip install -q "transformers>=4.46,<5" "peft>=0.12" "datasets>=2.19,<4" accelerate evaluate jiwer librosa soundfile huggingface_hub pytest fastapi httpx python-multipart
 ~/voice-venv/bin/python -c "import torch;print('cuda', torch.cuda.is_available(), torch.cuda.device_count())"
 # NeMo fork for IndicConformer benchmark (separate venv; failure here is non-blocking)
 python3 -m venv ~/nemo-venv || true
