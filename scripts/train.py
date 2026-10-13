@@ -48,6 +48,7 @@ def main():
     model.config.forced_decoder_ids = None
     model.config.suppress_tokens = []
     model.config.use_cache = False
+    model.enable_input_require_grads()  # needed for LoRA + gradient checkpointing
     model = get_peft_model(model, LoraConfig(r=a.r, lora_alpha=2 * a.r, lora_dropout=0.05,
                                              target_modules=["q_proj", "v_proj"]))
     model.print_trainable_parameters()
