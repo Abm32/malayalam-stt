@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+python-multipart
+soundfile
+librosa
+jiwer
+datasets>=2.19,<4
+transformers>=4.44
+peft>=0.12
+accelerate
+evaluate
+huggingface_hub
+pytest
