@@ -8,6 +8,6 @@ case "${1:-}" in
   stop)  az vm deallocate -g $RG -n $VM -o none && echo deallocated ;;
   sync)  rsync -az --delete --exclude .git --exclude __pycache__ --exclude 'data/public' \
            "$HERE/" "$HOST:$REMOTE/" && echo synced ;;
-  ssh)   shift; ssh $HOST "cd $REMOTE && export HF_HOME=/mnt/voice/hf && source ~/voice-venv/bin/activate && $*" ;;
+  ssh)   shift; ssh $HOST "cd $REMOTE && export HF_HOME=/mnt/voice/hf PYTHONPATH=$REMOTE && source ~/voice-venv/bin/activate && $*" ;;
   *) echo "usage: $0 start|stop|sync|ssh [cmd]"; exit 1 ;;
 esac
