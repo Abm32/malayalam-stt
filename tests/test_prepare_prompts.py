@@ -11,3 +11,8 @@ def test_filter_keeps_only_malayalam_5_to_20_words_deduped():
     ]
     out = filter_sentences(lines)
     assert out == ["ഇത് ഒരു നല്ല ദിവസം ആണ് എന്ന് തോന്നുന്നു"]
+
+
+def test_filter_drops_sentences_cut_at_an_initial():
+    # splitter broke "... ബി. ഉണ്ണികൃഷ്ണൻ" at the initial; last word is a 1-letter abbreviation
+    assert filter_sentences(["ലാൽ ജോസ്, ഷാജി കൈലാസ്, അൻവർ റഷീദ്, ശ്യാമപ്രസാദ്, ബി."]) == []

@@ -44,8 +44,11 @@ Runs on the laptop. Mic is local.
   accept. Progress counter.
 - Resume-safe: "next" = first sentence id not in manifest and not skipped.
 - Sentence list: `data/prompts.txt`, one per line, built by
-  `scripts/prepare_prompts.py` from IMaSC + Common Voice Malayalam text:
-  dedupe, 5–20 words, Malayalam script only, shuffled. Target 1000.
+  `scripts/prepare_prompts.py` from Malayalam Wikipedia text (not IMaSC or
+  Common Voice: public Malayalam ASR models train on those sentences, which
+  would inflate baseline scores on the own-voice test set): dedupe, 5–20
+  words, Malayalam script only, no sentence cut at an initial, shuffled.
+  Target 1000. (Prompts 1–9 were recorded from IMaSC before this change.)
 - Audio target: ~1000 utterances, 1.5–2 h, 16 kHz mono WAV.
 
 ### 2. Data (`scripts/prepare_data.py`)

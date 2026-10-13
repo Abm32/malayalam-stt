@@ -13,8 +13,9 @@ def filter_sentences(lines):
         s = re.sub(r"\s+", " ", raw).strip()
         if not s or not _ML.match(s):
             continue
-        n = len(s.split())
-        if n < 5 or n > 20 or s in seen:
+        words = s.split()
+        n = len(words)
+        if n < 5 or n > 20 or s in seen or len(words[-1].rstrip(".,?!")) <= 2:
             continue
         seen.add(s)
         out.append(s)
@@ -22,21 +23,17 @@ def filter_sentences(lines):
 
 
 def load_sources(hf_token=None):
-    """IMaSC text column only (parquet column pruning over HfFileSystem; skips ~4.7 GB of audio)."""
+    """Malayalam Wikipedia sentences (wikimedia/wikipedia 20231101.ml, text column only).
+    Deliberately NOT IMaSC/Common Voice: public Malayalam ASR models train on those sentences,
+    which would inflate baseline scores on the own-voice test set."""
     import pyarrow.parquet as pq
     from huggingface_hub import HfFileSystem
     fs = HfFileSystem(token=hf_token)
     texts = []
-    for path in sorted(fs.glob("datasets/thennal/IMaSC/data/*.parquet")):
+    for path in sorted(fs.glob("datasets/wikimedia/wikipedia/20231101.ml/*.parquet")):
         with fs.open(path) as f:
-            texts += pq.read_table(f, columns=["text"]).column("text").to_pylist()
-    try:
-        from datasets import load_dataset
-        cv = load_dataset("mozilla-foundation/common_voice_17_0", "ml",
-                          split="train+validation+test", token=hf_token)
-        texts += cv["sentence"]
-    except Exception as e:  # gated or offline; IMaSC alone is enough
-        print(f"common voice skipped: {type(e).__name__}")
+            for article in pq.read_table(f, columns=["text"]).column("text").to_pylist():
+                texts += re.split(r"(?<=[.?!])\s+|\n+", article)
     return texts
 
 
