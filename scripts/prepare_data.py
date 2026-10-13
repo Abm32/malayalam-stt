@@ -75,8 +75,7 @@ def main():
 
     pubs = []
     imasc = load_dataset("thennal/IMaSC", split="train")
-    tcol = "text" if "text" in imasc.column_names else imasc.column_names[0]
-    imasc = imasc.rename_column(tcol, "text").shuffle(seed=a.seed).select(range(min(n_public, len(imasc))))
+    imasc = imasc.shuffle(seed=a.seed).select(range(min(n_public, len(imasc))))
     imasc = imasc.map(lambda x: {"text": normalize(x["text"]), "source": "imasc"},
                       remove_columns=[c for c in imasc.column_names if c not in ("audio", "text")])
     pubs.append(imasc.cast_column("audio", Audio(sampling_rate=SR)))
