@@ -1,6 +1,6 @@
 # Resume notes — Malayalam own-voice STT
 
-Last updated: 2026-10-13. Recordings accepted so far: 384 / 1000 (laptop, `data/own/`).
+Last updated: 2026-10-20. Recordings: 998 / 1000 (done) (laptop, `data/own/`).
 
 ## State
 - All code committed on branch `testdoc` (voice/ paths only). Suite: `python -m pytest tests -q` → 18 pass.
@@ -8,6 +8,14 @@ Last updated: 2026-10-13. Recordings accepted so far: 384 / 1000 (laptop, `data/
 - Execution ledger (rulings, review findings, deferred minors): `~/Desktop/.superpowers/sdd/2026-10-13-malayalam-stt/progress.md`.
 - Pipeline fully dry-run on VM with proxy voice; code review done, 2 Critical + 4 Important fixed, 6 Minor deferred (listed in ledger).
 - VM `rogii-gpu` is DEALLOCATED. Env ready: `~/voice-venv` (torch 2.5.1, transformers 4.57), `~/nemo-venv` (NeMo fork works). HF cache `/mnt/voice/hf` (IMaSC + sajilck small already cached). Repo mirror `/mnt/voice/repo`.
+
+## DONE (2026-10-20)
+Pipeline complete, results in `results/README.md`. Winner: `adalat-ai/koyal-ml-120m-1.0` (NeMo TDT, CER 0.048 / WER 0.275 on own_test); IndicConformer 0.049; best Whisper 0.078; own-voice LoRA on Whisper was worse (0.081). Decision: ship koyal as is, no more recording (residual errors are proper nouns + digit formatting, not voice).
+
+Use it: `scripts/vm.sh ssh "~/nemo-venv/bin/python scripts/transcribe.py x.wav"` (needs `~/nemo-venv`, numpy<2; see `scripts/vm_setup.sh`).
+Possible later: koyal beam search (`--beam`), domain post-correction dictionary, NeMo fine-tune of koyal on the 998 clips if a use case demands it.
+
+<details><summary>Original next-steps (historical)</summary>
 
 ## Still needed from user
 1. Finish recording: `cd ~/Desktop/digital_agency/voice; python -m uvicorn record.server:app --port 8765` → http://localhost:8765. Resumes automatically.
@@ -33,3 +41,5 @@ rsync -az rogii:/mnt/voice/repo/results/ results/   # write results/README.md ta
 scripts/vm.sh stop
 ```
 Gotchas: run scripts with `scripts/vm.sh ssh` (sets PYTHONPATH + HF_HOME); never run two commands after one `cd ... &&` with `&` (second runs in $HOME). Candidate also worth benchmarking: `adalat-ai/koyal-ml-120m-1.0`.
+
+</details>

@@ -1,36 +1,30 @@
-"""python scripts/transcribe.py file.wav [--base MODEL] [--adapter runs/medium_lora/best]"""
+"""Transcribe 16 kHz mono WAVs with the winning model (koyal, CER 0.048 on own voice). Runs in ~/nemo-venv.
+Usage: ~/nemo-venv/bin/python scripts/transcribe.py a.wav b.wav [--beam]
+"""
 import argparse
 
-import librosa
-import torch
-from transformers import WhisperForConditionalGeneration, WhisperProcessor, pipeline
+from scripts.eval_nemo import load
 
-from scripts.normalize import normalize
-
-
-def load(base, adapter, device):
-    proc = WhisperProcessor.from_pretrained(base)
-    model = WhisperForConditionalGeneration.from_pretrained(base, torch_dtype=torch.float16 if device == "cuda" else torch.float32)
-    if adapter:
-        from peft import PeftModel
-        model = PeftModel.from_pretrained(model, adapter).merge_and_unload()
-    return pipeline("automatic-speech-recognition", model=model, tokenizer=proc.tokenizer,
-                    feature_extractor=proc.feature_extractor, device=0 if device == "cuda" else -1,
-                    chunk_length_s=15, stride_length_s=3)
+MODEL = "adalat-ai/koyal-ml-120m-1.0"
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("audio")
-    ap.add_argument("--base", default="vrclc/Whisper-medium-Malayalam")
-    ap.add_argument("--adapter", default="runs/medium_lora/best")
-    ap.add_argument("--raw", action="store_true", help="skip normalizer")
+    ap.add_argument("wavs", nargs="+")
+    ap.add_argument("--beam", action="store_true", help="TDT maes beam search (small gain over greedy)")
     a = ap.parse_args()
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    asr = load(a.base, a.adapter or None, device)
-    y, _ = librosa.load(a.audio, sr=16000, mono=True)
-    text = asr({"raw": y, "sampling_rate": 16000}, generate_kwargs={"language": "ml", "task": "transcribe"})["text"]
-    print(text if a.raw else normalize(text))
+    model = load(MODEL)
+    if a.beam:
+        from omegaconf import open_dict
+        cfg = model.cfg.decoding
+        with open_dict(cfg):
+            cfg.strategy, cfg.beam = "maes", {"beam_size": 4}
+        model.change_decoding_strategy(cfg)
+    hyps = model.transcribe(a.wavs, batch_size=8)
+    if isinstance(hyps, tuple):
+        hyps = hyps[0]
+    for p, h in zip(a.wavs, hyps):
+        print(p, "\t", h.text if hasattr(h, "text") else h)
 
 
 if __name__ == "__main__":
