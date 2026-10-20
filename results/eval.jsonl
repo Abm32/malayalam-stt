@@ -1,0 +1,6 @@
+{"model": "openai/whisper-large-v3", "adapter": null, "split": "own_test", "n": 88, "wer": 3.3181818181818183, "cer": 1.0670691691823073}
+{"model": "sajilck/whisper-small-malayalam-v2", "adapter": null, "split": "own_test", "n": 88, "wer": 0.5818181818181818, "cer": 0.14870717941987138}
+{"model": "adalat-ai/whisper-medium-ml-high-lr", "adapter": null, "split": "own_test", "n": 88, "wer": 0.35844155844155845, "cer": 0.07756923480771755}
+{"model": "adalat-ai/whisper-medium-ml-rmft", "adapter": null, "split": "own_test", "n": 88, "wer": 0.4051948051948052, "cer": 0.08426302664391652}
+{"model": "vrclc/Whisper-medium-Malayalam", "adapter": null, "split": "own_test", "n": 88, "wer": 0.5753246753246753, "cer": 0.12810080063000392}
+{"model": "adalat-ai/whisper-medium-ml-high-lr", "adapter": "runs/medium_lora/best", "split": "own_test", "n": 88, "wer": 0.3974025974025974, "cer": 0.08098175613597584}

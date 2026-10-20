@@ -59,7 +59,7 @@ def main():
         x["labels"] = proc.tokenizer(x["text"]).input_ids
         return x
 
-    train = load_from_disk(Path(a.root) / "mix_train").map(prep, remove_columns=["audio", "text", "source"], num_proc=4)
+    train = load_from_disk(Path(a.root) / "mix_train").map(prep, remove_columns=["audio", "text", "source"])
     dev = load_from_disk(Path(a.root) / "own_dev").map(prep, remove_columns=["audio", "text", "source"])
     train = train.filter(lambda x: len(x["labels"]) < 448)
 
