@@ -4,3 +4,5 @@
 {"model": "adalat-ai/whisper-medium-ml-rmft", "adapter": null, "split": "own_test", "n": 88, "wer": 0.4051948051948052, "cer": 0.08426302664391652}
 {"model": "vrclc/Whisper-medium-Malayalam", "adapter": null, "split": "own_test", "n": 88, "wer": 0.5753246753246753, "cer": 0.12810080063000392}
 {"model": "adalat-ai/whisper-medium-ml-high-lr", "adapter": "runs/medium_lora/best", "split": "own_test", "n": 88, "wer": 0.3974025974025974, "cer": 0.08098175613597584}
+{"model": "ai4bharat/indicconformer_stt_ml_hybrid_ctc_rnnt_large", "adapter": null, "split": "own_test", "n": 88, "wer": 0.2805194805194805, "cer": 0.048562803517521985}
+{"model": "adalat-ai/koyal-ml-120m-1.0", "adapter": null, "split": "own_test", "n": 88, "wer": 0.2753246753246753, "cer": 0.0481690510565691}

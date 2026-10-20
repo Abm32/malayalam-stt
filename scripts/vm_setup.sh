@@ -13,5 +13,5 @@ python3 -m venv ~/voice-venv
 python3 -m venv ~/nemo-venv || true
 ~/nemo-venv/bin/pip install -q --upgrade pip || true
 ~/nemo-venv/bin/pip install -q torch torchaudio --index-url https://download.pytorch.org/whl/cu121 || true
-~/nemo-venv/bin/pip install -q "nemo_toolkit[asr] @ git+https://github.com/AI4Bharat/NeMo.git@nemo-v2" "pytorch_lightning<2.5" "lightning<2.5" jiwer "datasets>=2.19,<4" soundfile || echo "NEMO INSTALL FAILED (non-blocking)"
+~/nemo-venv/bin/pip install -q "nemo_toolkit[asr] @ git+https://github.com/AI4Bharat/NeMo.git@nemo-v2" "pytorch_lightning<2.5" "lightning<2.5" "numpy<2" jiwer "datasets>=2.19,<4" soundfile || echo "NEMO INSTALL FAILED (non-blocking)"
 echo SETUP DONE
